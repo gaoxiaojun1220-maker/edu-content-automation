@@ -1,0 +1,97 @@
+{
+  "name": "Edu Content Automation",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "start",
+      "name": "Start",
+      "type": "n8n-nodes-base.start"
+    },
+    {
+      "parameters": {
+        "functionCode": "// Retrieve content brief from external system\nreturn items;"
+      },
+      "name": "Get Content Brief",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "id": "getContentBrief"
+    },
+    {
+      "parameters": {
+        "requestMethod": "POST",
+        "url": "https://api.example.com/generate",
+        "jsonParameters": true,
+        "options": {},
+        "body": {
+          "content": "={{$json[\"brief\"]}}"
+        }
+      },
+      "name": "AI Service",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 1,
+      "id": "aiService"
+    },
+    {
+      "parameters": {
+        "functionCode": "// Map AI response to article and video templates\nreturn items;"
+      },
+      "name": "Apply Templates",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "id": "applyTemplates"
+    },
+    {
+      "parameters": {},
+      "name": "Schedule Posts",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "id": "schedulePosts"
+    }
+  ],
+  "connections": {
+    "Start": {
+      "main": [
+        [
+          {
+            "node": "Get Content Brief",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Content Brief": {
+      "main": [
+        [
+          {
+            "node": "AI Service",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Service": {
+      "main": [
+        [
+          {
+            "node": "Apply Templates",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Apply Templates": {
+      "main": [
+        [
+          {
+            "node": "Schedule Posts",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}
